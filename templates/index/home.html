@@ -1,0 +1,125 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="container">
+    
+    <button id="recordToggleButton" class="record-btn">
+        <span id="recordIcon" class="material-icons">mic</span>
+    </button>
+    
+    <a id="downloadLink" class="download-link" style="display: none;">Download Recording</a>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        padding-top: 100px;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .record-btn {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        border: none;
+        background-color: #4CAF50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .record-btn.recording {
+        background-color: #ff4d4d;
+        animation: pulse 1s infinite;
+    }
+
+    .download-link {
+        margin-top: 30px;
+        font-size: 1.2rem;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .material-icons{
+        font-size: 60px;
+    }
+</style>
+
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    document.getElementById('recordToggleButton').addEventListener('click', async () => {
+        if (!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/ogg' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.href = audioUrl;
+                    downloadLink.download = 'recording.ogg';
+                    downloadLink.style.display = 'block';
+                    downloadLink.textContent = 'Download Recording';
+                    
+                    downloadLink.click();
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                toggleRecordingStyle();
+            } catch (error) {
+                console.error('Erro ao acessar o microfone:', error);
+                alert('Não foi possível acessar o microfone. Verifique as permissões no navegador.');
+            }
+        } else {
+            mediaRecorder.stop();
+            isRecording = false;
+            toggleRecordingStyle();
+        }
+    });
+
+    function toggleRecordingStyle() {
+        const recordButton = document.getElementById('recordToggleButton');
+        const recordIcon = document.getElementById('recordIcon');
+        if (isRecording) {
+            recordButton.classList.add('recording');
+            recordIcon.textContent = 'stop';
+        } else {
+            recordButton.classList.remove('recording');
+            recordIcon.textContent = 'mic';
+        }
+    }
+</script>
+
+{% endblock %}
