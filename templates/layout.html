@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     {% if titulo %}
@@ -12,123 +11,106 @@
     <title>Projeto Web</title>
     {% endif %}
 
-    <!--
-		https://getbootstrap.com/docs/4.6/getting-started/introduction/
-	-->
-
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
     />
-
     <link
       rel="stylesheet"
       type="text/css"
       href="/static/css/bootstrap.min.css"
     />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="/static/css/sweetalert2.min.css"
-    />
     <link rel="stylesheet" type="text/css" href="/static/css/estilo.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/diarioMensal.css" />
 
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script
       type="text/javascript"
       src="/static/js/bootstrap.bundle.min.js"
     ></script>
-    <script type="text/javascript" src="/static/js/sweetalert2.min.js"></script>
-    <script type="text/javascript" src="/static/js/projeto.js"></script>
-
-	<!-- scroll reveal -->
-	<script src="https://unpkg.com/scrollreveal"></script>
-
-	<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>  
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        AOS.init();
-      });
-    </script>
   </head>
   <body>
-    <div class="limitador">
-      <!--
-		Barra padrão do Bootstrap
-
-		https://getbootstrap.com/docs/4.6/components/navbar/
-	-->
-
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="/"> Projeto </a>
-
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarToggler"
-          aria-controls="navbarToggler"
-          aria-expanded="false"
-          aria-label="Alternar navegação"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarToggler">
-          <div class="navbar-nav">
+    <!-- Navbar superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="/">
+        <img src="../static/img/logo.webp" class="logo-redonda" alt="Logo" />
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSuperior"
+        aria-controls="navbarSuperior"
+        aria-expanded="false"
+        aria-label="Alternar navegação"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSuperior">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
             <a class="nav-link" href="/home">Home</a>
-          </div>
-          <div class="navbar-nav">
-            <a class="nav-link" href="/consolidadoDiarioMensal">Consolidado Diário/Mensal</a>
-          </div>
-          <div class="navbar-nav">
-            <a class="nav-link" href="/consolidadoDispositivo">Consolidado por Dispositivo</a>
-          </div>
-          <div class="navbar-nav">
-            <a class="nav-link" href="/consolidadoPorHora">Consolidado por Hora</a>
-          </div>
-          <div class="navbar-nav">
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="/sobre">Sobre</a>
-          </div>
-        </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+
+    <!-- Container para navbar lateral e conteúdo -->
+    <div class="d-flex" style="margin-top: 56px">
+      <!-- Navbar lateral reduzida -->
+      <!-- Navbar lateral -->
+      <nav
+        class="navbar bg-light flex-column"
+        style="
+          width: 100px;
+          height: 100vh;
+          position: fixed;
+          top: 56px;
+          border-right: 1px solid #ddd;
+        "
+      >
+        <ul class="navbar-nav w-100 text-center">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="/consolidadoDiarioMensal"
+              title="Consolidado Diário/Mensal"
+            >
+              <i class="fa-solid fa-calendar-alt"></i>
+              <span class="d-none d-md-block small">Diário</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="/consolidadoDispositivo"
+              title="Consolidado por Dispositivo"
+            >
+              <i class="fa-solid fa-microchip"></i>
+              <span class="d-none d-md-block small">Dispositivo</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="/consolidadoPorHora"
+              title="Consolidado por Hora"
+            >
+              <i class="fa-solid fa-clock"></i>
+              <span class="d-none d-md-block small">Por Hora</span>
+            </a>
+          </li>
+        </ul>
       </nav>
 
-      <div class="conteudo">{% block body %}{% endblock %}</div>
-
-      <div class="rodape">
-        <a
-          class="link-rodape"
-          href="https://sistemasdeinformacao.espm.edu.br"
-          target="_blank"
-        >
-          <small
-            >Desenvolvido em 2024 pelo curso de Sistemas de Informação da
-            ESPM</small
-          >
-          <br />
-          <img
-            src="/static/img/logo-si-512.png"
-            style="width: 100%; max-width: 150px"
-          />
-        </a>
-      </div>
-
-      {% block espaco_rodape %}{% endblock %}
+      <!-- Conteúdo principal -->
+      <main class="flex-grow-1" style="margin-left: 80px; padding: 20px">
+        <div class="conteudo">{% block body %}{% endblock %}</div>
+      </main>
     </div>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        AOS.init({
-          duration: 900, // duração da animação em milissegundos
-          easing: "ease-in-out", // curva de animação
-        });
-      });
-    </script>
   </body>
 </html>
