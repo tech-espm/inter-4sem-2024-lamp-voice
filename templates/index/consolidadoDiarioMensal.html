@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-4">
@@ -9,8 +8,8 @@
                 <div class="card-body">
                     <form id="form">
                         <div class="form-group">
-                            <label for="mes">Mês</label>
-                            <input id="mes" name="mes" class="form-control" type="number" min="1" max="12" />
+                            <label for="data">Data</label>
+                            <input id="data" name="data" class="form-control" type="month" />
                         </div>
                         <button type="submit" class="btn btn-primary">Listar</button>
                     </form>
@@ -20,123 +19,88 @@
     </div>
 
     <div class="card shadow my-4">
-        <div class="card-body" id="div-grafico"></div>
+        <div class="card-body" id="div-grafico">
+            <!-- O gráfico será gerado aqui -->
+        </div>
     </div>
-
 </div>
+
+<script type="text/javascript" src="/static/js/chart.js/chart.min.js"></script>
 
 <script type="text/javascript">
     "use strict";
 
-    // Validação do formulário para garantir que o campo "mes" esteja preenchido
-    $("#form").validate({
-        rules: {
-            mes: {
-                required: true,
-                min: 1,
-                max: 12
-            }
-        },
-        messages: {
-            mes: {
-                required: "Por favor, insira o mês.",
-                min: "O mês deve estar entre 1 e 12.",
-                max: "O mês deve estar entre 1 e 12."
-            }
-        },
-        submitHandler: function () {
-            atualizarDados();
+    // Validação e envio do formulário
+    document.getElementById("form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const dataSelecionada = document.getElementById("data").value;
+
+        if (!dataSelecionada) {
+            alert("Por favor, selecione uma data.");
+            return;
         }
+
+        // Extraindo o ano e o mês
+        const mes = dataSelecionada.split("-")[1]; // Pega o mês do formato "YYYY-MM"
+        const ano = dataSelecionada.split("-")[0]; // Pega o ano do formato "YYYY-MM"
+
+        // Chamando a API
+        await atualizarDados(ano, mes);
     });
 
-    async function atualizarDados() {
+    async function atualizarDados(ano, mes) {
         try {
-            let mes = document.getElementById("mes").value;
-
-            if (!mes) {
-                Swal.fire("Erro", "Por favor, insira o mês.", "error");
+            const response = await fetch(`/listar-consolidado-dia-mes?ano=${ano}&mes=${mes}`);
+            if (!response.ok) {
+                alert("Erro ao carregar os dados.");
                 return;
             }
 
-            let response = await fetch(`/listar-consolidado-dia-mes?mes=${mes}`);
-            if (response.ok) {
-                let div = document.getElementById("div-grafico");
-                div.innerHTML = '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
+            const dados = await response.json();
 
-                let labels = [], data = [];
-                let leituras = await response.json();
+            if (!dados.length) {
+                alert("Nenhum dado disponível para o período selecionado.");
+                return;
+            }
 
-                if (!leituras.length) {
-                    Swal.fire("Erro", "Sem dados disponíveis para o mês selecionado!", "error");
-                    return;
-                }
+            // Preparar dados para o gráfico
+            const labels = dados.map(item => item.dia);
+            const valores = dados.map(item => item.consumo);
 
-                // Preenchendo os dados do gráfico
-                for (let leitura of leituras) {
-                    labels.push(leitura.data);  // Data
-                    data.push(leitura.consumo);  // Consumo
-                }
+            // Renderizar o gráfico
+            const canvas = document.createElement("canvas");
+            const divGrafico = document.getElementById("div-grafico");
+            divGrafico.innerHTML = "";
+            divGrafico.appendChild(canvas);
 
-                new Chart(document.getElementById("grafico-barras"), {
-                    type: "bar",
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Consumo (kWh)",
-                            backgroundColor: "#4e73df",
-                            borderColor: "#4e73df",
-                            data: data,
-                        }]
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                grid: {
-                                    display: false,
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    maxTicksLimit: 10
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    padding: 10
-                                },
-                                grid: {
-                                    color: "rgb(234, 236, 244)",
-                                    zeroLineColor: "rgb(234, 236, 244)",
-                                    drawBorder: false,
-                                    borderDash: [2],
-                                    zeroLineBorderDash: [2]
-                                }
-                            },
+            new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Consumo por Dia (kWh)",
+                        data: valores,
+                        backgroundColor: "rgba(54, 162, 235, 0.5)",
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true
                         },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: "rgb(255,255,255)",
-                                bodyColor: "#858796",
-                                borderColor: '#dddfeb',
-                                borderWidth: 1,
-                                padding: 10,
-                                displayColors: false
-                            }
+                        y: {
+                            beginAtZero: true
                         }
                     }
-                });
-            } else {
-                const errorData = await response.json();
-                Swal.fire("Erro", errorData.error || "Erro ao listar os dados.", "error");
-            }
-        } catch (ex) {
-            Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao atualizar os dados:", error);
+            alert("Erro ao processar os dados.");
         }
     }
 </script>
-
 {% endblock %}

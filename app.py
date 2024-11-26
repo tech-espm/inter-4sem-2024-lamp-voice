@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, Response
+from flask import Flask, render_template, jsonify, request, Response, json
 import config
 from banco import listarDispositivos, listarLeituras, listarConsolidadoPorDiaPorMes, criarDispositivo, criarLeitura, listarConsolidadoPorDispositivoPorDiaPorMes, listarConsolidadoPorHoraPorDia 
 
@@ -15,6 +15,10 @@ def home():
 @app.get('/sobre')
 def sobre():
     return render_template('index/sobre.html', titulo='Sobre Nós')
+
+@app.get('/consolidadoDiarioMensal')
+def consolidadoDiarioMensal():
+    return render_template('index/consolidadoDiarioMensal.html', titulo='Consolidado Diario Mensal')
 
 @app.get('/consolidadoPorHora')
 def consolidadoPorHora():
@@ -37,17 +41,9 @@ def listar_leituras():
 
 @app.get('/listar-consolidado-dia-mes')
 def listar_consolidado_dia_mes():
-    mes = request.args.get('mes')
-    if mes is None:
-        return jsonify({"error": "Parâmetro 'mes' é obrigatório"}), 400
-    
-    try:
-        mes = int(mes)
-    except ValueError:
-        return jsonify({"error": "Parâmetro 'mes' deve ser um número inteiro"}), 400
-
+    mes = int(request.args.get('mes'))
     leituras = listarConsolidadoPorDiaPorMes(mes)
-    return render_template('index/consolidadoDiarioMensal.html', leituras=leituras)
+    return json.jsonify(leituras)
 
 @app.get('/listar-consolidado-por-hora-dia')
 def listar_consolidado_por_hora_dia():
