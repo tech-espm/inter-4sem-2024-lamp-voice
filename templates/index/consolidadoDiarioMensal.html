@@ -20,7 +20,6 @@
 
     <div class="card shadow my-4">
         <div class="card-body" id="div-grafico">
-            <!-- O gráfico será gerado aqui -->
         </div>
     </div>
 </div>
@@ -30,7 +29,6 @@
 <script type="text/javascript">
     "use strict";
 
-    // Validação e envio do formulário
     document.getElementById("form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const dataSelecionada = document.getElementById("data").value;
@@ -40,11 +38,9 @@
             return;
         }
 
-        // Extraindo o ano e o mês
-        const mes = dataSelecionada.split("-")[1]; // Pega o mês do formato "YYYY-MM"
-        const ano = dataSelecionada.split("-")[0]; // Pega o ano do formato "YYYY-MM"
+        const mes = dataSelecionada.split("-")[1]; 
+        const ano = dataSelecionada.split("-")[0]; 
 
-        // Chamando a API
         await atualizarDados(ano, mes);
     });
 
@@ -63,11 +59,9 @@
                 return;
             }
 
-            // Preparar dados para o gráfico
             const labels = dados.map(item => item.dia);
             const valores = dados.map(item => item.consumo);
 
-            // Renderizar o gráfico
             const canvas = document.createElement("canvas");
             const divGrafico = document.getElementById("div-grafico");
             divGrafico.innerHTML = "";

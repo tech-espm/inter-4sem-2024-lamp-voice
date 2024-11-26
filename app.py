@@ -53,8 +53,6 @@ def listar_consolidado_por_hora_dia():
         return jsonify({"error": "Parâmetro 'data' é obrigatório"}), 400
     
     leituras = listarConsolidadoPorHoraPorDia(data)
-    
-    # Retornar os dados como JSON
     return jsonify(leituras)
 
 @app.get('/listar-consolidado-por-dispositivo-dia-mes')
@@ -67,7 +65,6 @@ def listar_consolidado_por_dispositivo_dia_mes():
         return jsonify({"error": "Parâmetros 'mes' e 'id_dispositivo' são obrigatórios"}), 400
 
     try:
-        # Converta os parâmetros para int
         mes = int(mes)
         id_dispositivo = int(id_dispositivo)
     except ValueError:

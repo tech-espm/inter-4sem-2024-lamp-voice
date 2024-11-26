@@ -11,7 +11,6 @@
                         <div class="form-group">
                             <label for="dispositivo">Dispositivo</label>
                             <select id="dispositivo" name="dispositivo" class="form-control">
-                                <!-- Os dispositivos cadastrados serão carregados aqui -->
                             </select>
                         </div>
                         <div class="form-group">
@@ -27,7 +26,6 @@
 
     <div class="card shadow my-4">
         <div class="card-body" id="div-grafico">
-            <!-- O gráfico será gerado aqui -->
         </div>
     </div>
 
@@ -41,7 +39,6 @@
 <script type="text/javascript">
     "use strict";
 
-    // Carrega a lista de dispositivos ao carregar a página
     async function carregarDispositivos() {
         try {
             const response = await fetch('/listar-dispositivos');
@@ -50,7 +47,7 @@
                 const selectDispositivo = document.getElementById("dispositivo");
                 dispositivos.forEach(dispositivo => {
                     const option = document.createElement("option");
-                    option.value = dispositivo.id_dispositivo; // Corrigido para 'id_dispositivo'
+                    option.value = dispositivo.id_dispositivo; 
                     option.text = dispositivo.nome;
                     selectDispositivo.appendChild(option);
                 });
@@ -62,26 +59,21 @@
         }
     }
 
-    // Chama a função de carregamento de dispositivos ao iniciar a página
     carregarDispositivos();
 
-    // Validação do formulário
     $("#form").validate({
         rules: {
             dispositivo: { required: true },
             data: { required: true }
         },
         submitHandler: function (form) {
-            // A função submitHandler agora faz a chamada de atualizarDados
             atualizarDados();
         }
     });
 
-    // Função para atualizar os dados e gerar o gráfico
     async function atualizarDados() {
         waitSwal();
 
-        // Pegue o valor dos campos do formulário
         const dataSelecionada = document.getElementById("data").value;
         const dispositivoSelecionado = document.getElementById("dispositivo").value;
 
@@ -90,11 +82,9 @@
             return;
         }
 
-        // Extrair o mês da data selecionada (formato MM)
         const mesSelecionado = dataSelecionada.split("-")[1]; // Extrai o mês no formato MM
 
         try {
-            // Construir a URL com os parâmetros corretamente ordenados
             const url = `/listar-consolidado-por-dispositivo-dia-mes?mes=${mesSelecionado}&id_dispositivo=${dispositivoSelecionado}`;
             
             let response = await fetch(url);
@@ -113,13 +103,11 @@
                     return;
                 }
 
-                // Montando os dados para o gráfico
                 for (let i = 0; i < leituras.length; i++) {
-                    labels.push(leituras[i].dia);  // Dia da leitura (formato DD/MM/AAAA)
-                    data.push(leituras[i].consumo);  // Consumo
+                    labels.push(leituras[i].dia);  
+                    data.push(leituras[i].consumo);  
                 }
 
-                // Gerando o gráfico
                 new Chart(document.getElementById("grafico-barras"), {
                     type: "bar",
                     data: {
@@ -195,7 +183,6 @@
         }
     }
 
-    // Chama a função ao carregar a página para exibir os dados, caso haja parâmetros 'data' e 'dispositivo' na URL
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const data = urlParams.get('data');

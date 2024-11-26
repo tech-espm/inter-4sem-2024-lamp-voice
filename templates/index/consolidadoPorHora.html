@@ -21,7 +21,6 @@
 
     <div class="card shadow my-4">
         <div class="card-body" id="div-grafico">
-            <!-- O gráfico será gerado aqui -->
         </div>
     </div>
 
@@ -35,7 +34,6 @@
 <script type="text/javascript">
     "use strict";
 
-    // Validação do formulário
     $("#form").validate({
         rules: {
             data: {
@@ -47,11 +45,9 @@
         }
     });
 
-    // Função para atualizar os dados e gerar o gráfico
     async function atualizarDados() {
         waitSwal();
 
-        // Pegue o valor da data do formulário
         const dataSelecionada = document.getElementById("data").value;
 
         if (!dataSelecionada) {
@@ -60,7 +56,6 @@
         }
 
         try {
-            // Passe a data como parâmetro na URL
             let response = await fetch(`/listar-consolidado-por-hora-dia?data=${dataSelecionada}`);
 
             if (response.ok) {
@@ -77,13 +72,11 @@
                     return;
                 }
 
-                // Montando os dados para o gráfico
                 for (let i = 0; i < leituras.length; i++) {
-                    labels.push(leituras[i].hora);  // Hora da leitura
-                    data.push(leituras[i].consumo);  // Consumo
+                    labels.push(leituras[i].hora);  
+                    data.push(leituras[i].consumo);  
                 }
 
-                // Gerando o gráfico
                 let grafico = new Chart(document.getElementById("grafico-barras"), {
                     type: "bar",
                     data: {
@@ -159,7 +152,6 @@
         }
     }
 
-    // Chama a função ao carregar a página para exibir os dados, caso haja um parâmetro 'data' na URL
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const data = urlParams.get('data');
