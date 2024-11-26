@@ -16,7 +16,6 @@ body {
     background-color: #f4f6f9;
 }
 
-/* Estrutura Principal */
 .limitador {
     max-width: 1366px;
     margin: 0 auto;
@@ -32,12 +31,11 @@ body {
 
 main {
     padding: 20px;
-    margin-left: 100px; /* Mesma largura da navbar lateral */
+    margin-left: 100px; 
     background-color: #f4f6f9;
     min-height: 100vh;
 }
 
-/* Navbar Superior */
 .navbar-dark {
     background-color: #343a40;
 }
@@ -57,69 +55,67 @@ main {
     color: #fff;
 }
 
-/* Navbar Lateral */
 .navbar.bg-light {
     background-color: #ffffff !important;
-    width: 100px; /* Largura inicial da navbar */
+    width: 100px; 
     height: 100vh;
     position: fixed;
-    top: 56px; /* Ajuste para compensar a navbar superior fixa */
+    top: 56px; 
     border-right: 1px solid #ddd;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 30px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    border-radius: 0px 50px 90px 0px; /* Arredonda o lado direito */
-    transition: all 0.3s ease; /* Animação ao interagir */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+    border-radius: 0px 50px 90px 0px; 
+    transition: all 0.3s ease; 
 }
 
 
 .navbar.bg-light:hover {
-    width: 150px; /* Expande a navbar ao passar o mouse */
+    width: 150px; 
 }
 
 .navbar.bg-light .nav-link {
     color: #333;
-    font-size: 14px; /* Texto ajustado */
-    padding: 20px 5px; /* Ajusta o espaçamento interno */
+    font-size: 14px; 
+    padding: 20px 5px; 
     display: flex;
-    flex-direction: column; /* Ícone acima do texto */
-    align-items: center; /* Centraliza ícone e texto */
+    flex-direction: column; 
+    align-items: center;
     justify-content: center;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .navbar.bg-light .nav-link:hover {
-    background-color: #f0f0f0; /* Destaque ao passar o mouse */
-    color: #343A40; /* Cor do texto ao hover */
-    border-radius: 10px; /* Bordas arredondadas no hover */
+    background-color: #f0f0f0; 
+    color: #343A40; 
+    border-radius: 10px; 
 }
 
 .navbar.bg-light .nav-link i {
     font-size: 24px;
     color: #343A40;
-    margin-bottom: 5px; /* Espaço entre ícone e texto */
+    margin-bottom: 5px; 
     transition: color 0.3s ease;
 }
 
 .navbar.bg-light .nav-link:hover i {
-    color: #0056b3; /* Cor do ícone ao hover */
+    color: #0056b3; 
 }
 
 .navbar.bg-light .nav-link span {
-    display: none; /* Esconde o texto em telas pequenas */
+    display: none; 
     font-size: 14px;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
 .navbar.bg-light:hover .nav-link span {
-    display: block; /* Mostra o texto ao expandir a navbar */
+    display: block; 
 }
 
-/* Rodapé */
 .rodape {
     text-align: center;
     background-color: #343a40;
@@ -136,58 +132,56 @@ main {
 /* Responsividade */
 @media (max-width: 768px) {
     main {
-        margin-left: 80px; /* Ajusta a margem para a largura menor da navbar */
+        margin-left: 80px; 
     }
 
     .navbar.bg-light {
-        width: 80px; /* Navbar lateral compacta */
+        width: 80px; 
     }
 
     .navbar.bg-light:hover {
-        width: 120px; /* Expande menos em telas pequenas */
+        width: 120px; 
     }
 
     .navbar.bg-light .nav-link span {
-        display: none; /* Esconde o texto completamente */
+        display: none; 
     }
 
     .navbar.bg-light .nav-link i {
-        font-size: 20px; /* Ícones menores */
+        font-size: 20px; 
     }
 }
 
 @media (max-width: 480px) {
     .navbar.bg-light {
-        width: 60px; /* Navbar lateral ainda mais compacta */
+        width: 60px; 
     }
 
     main {
-        margin-left: 60px; /* Ajusta o conteúdo para acompanhar a largura */
+        margin-left: 60px; 
     }
 }
 
-/* Gráfico Responsivo */
 .chart-container {
     position: relative;
     width: 100%;
-    max-width: 100%; /* Garante que o gráfico não ultrapasse os limites */
-    height: 400px; /* Define uma altura padrão */
-    overflow-x: auto; /* Adiciona rolagem horizontal, se necessário */
-    margin: 0 auto; /* Centraliza o gráfico */
-    padding: 10px; /* Adiciona espaçamento interno */
+    max-width: 100%; 
+    height: 400px; 
+    overflow-x: auto; 
+    margin: 0 auto; 
+    padding: 10px; 
 }
 
 canvas {
-    width: 100% !important; /* Ajusta a largura do gráfico */
-    height: auto !important; /* Ajusta a altura proporcionalmente */
+    width: 100% !important; 
+    height: auto !important; 
 }
 
-/* Estilo para a logo redonda */
 .logo-redonda {
-    width: 50px; /* Define a largura da logo */
-    height: 50px; /* Define a altura da logo */
-    border-radius: 50%; /* Faz a logo ficar redonda */
-    object-fit: cover; /* Garante que a imagem se ajuste ao contêiner sem distorção */
-    margin-right: 10px; /* Adiciona um espaço entre a logo e o texto ao lado */
-    margin-left: 8px; /* Adiciona espaço à esquerda */
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    margin-right: 10px; 
+    margin-left: 8px; 
 }
