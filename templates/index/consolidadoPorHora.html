@@ -1,0 +1,174 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card shadow my-4">
+                <div class="card-body">
+                    <form id="form">
+                        <div class="form-group">
+                            <label for="data">Data</label>
+                            <input id="data" name="data" class="form-control" type="date" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Listar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow my-4">
+        <div class="card-body" id="div-grafico">
+            <!-- O gráfico será gerado aqui -->
+        </div>
+    </div>
+
+</div>
+
+<script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
+<script src="/static/js/jquery-validate/additional-methods.min.js"></script>
+<script src="/static/js/jquery-validate/localization/messages_pt_BR.min.js"></script>
+<script type="text/javascript" src="/static/js/chart.js/chart.min.js"></script>
+
+<script type="text/javascript">
+    "use strict";
+
+    // Validação do formulário
+    $("#form").validate({
+        rules: {
+            data: {
+                required: true
+            }
+        },
+        submitHandler: function () {
+            atualizarDados();
+        }
+    });
+
+    // Função para atualizar os dados e gerar o gráfico
+    async function atualizarDados() {
+        waitSwal();
+
+        // Pegue o valor da data do formulário
+        const dataSelecionada = document.getElementById("data").value;
+
+        if (!dataSelecionada) {
+            Swal.fire("Erro", "Por favor, selecione uma data!", "error");
+            return;
+        }
+
+        try {
+            // Passe a data como parâmetro na URL
+            let response = await fetch(`/listar-consolidado-por-hora-dia?data=${dataSelecionada}`);
+
+            if (response.ok) {
+                Swal.close();
+
+                let div = document.getElementById("div-grafico");
+                div.innerHTML = '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
+
+                let labels = [], data = [];
+
+                let leituras = await response.json();
+                if (!leituras || !leituras.length) {
+                    Swal.fire("Erro", "Sem dados disponíveis para a data selecionada!", "error");
+                    return;
+                }
+
+                // Montando os dados para o gráfico
+                for (let i = 0; i < leituras.length; i++) {
+                    labels.push(leituras[i].hora);  // Hora da leitura
+                    data.push(leituras[i].consumo);  // Consumo
+                }
+
+                // Gerando o gráfico
+                let grafico = new Chart(document.getElementById("grafico-barras"), {
+                    type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Consumo (kWh)",
+                            backgroundColor: "#4e73df",
+                            hoverBackgroundColor: "#2e59d9",
+                            borderColor: "#4e73df",
+                            data: data,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 25,
+                                top: 25,
+                                bottom: 0
+                            }
+                        },
+                        scales: {
+                            x: {
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 10
+                                },
+                                maxBarThickness: 25,
+                            },
+                            y: {
+                                ticks: {
+                                    beginAtZero: true,
+                                    padding: 10
+                                },
+                                gridLines: {
+                                    color: "rgb(234, 236, 244)",
+                                    zeroLineColor: "rgb(234, 236, 244)",
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            },
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            titleMarginBottom: 10,
+                            titleFontColor: '#6e707e',
+                            titleFontSize: 14,
+                            backgroundColor: "rgb(255,255,255)",
+                            bodyFontColor: "#858796",
+                            borderColor: '#dddfeb',
+                            borderWidth: 1,
+                            xPadding: 15,
+                            yPadding: 15,
+                            displayColors: false,
+                            caretPadding: 10
+                        },
+                    }
+                });
+
+            } else {
+                await exibirErro(response);
+            }
+
+        } catch (ex) {
+            Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
+        }
+    }
+
+    // Chama a função ao carregar a página para exibir os dados, caso haja um parâmetro 'data' na URL
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const data = urlParams.get('data');
+        
+        if (data) {
+            document.getElementById('data').value = data;
+            atualizarDados();
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card shadow my-4">
+                <div class="card-body">
+                    <form id="form">
+                        <div class="form-group">
+                            <label for="dispositivo">Dispositivo</label>
+                            <select id="dispositivo" name="dispositivo" class="form-control">
+                                <!-- Os dispositivos cadastrados serão carregados aqui -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data">Data</label>
+                            <input id="data" name="data" class="form-control" type="date" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Listar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow my-4">
+        <div class="card-body" id="div-grafico">
+            <!-- O gráfico será gerado aqui -->
+        </div>
+    </div>
+
+</div>
+
+<script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
+<script src="/static/js/jquery-validate/additional-methods.min.js"></script>
+<script src="/static/js/jquery-validate/localization/messages_pt_BR.min.js"></script>
+<script type="text/javascript" src="/static/js/chart.js/chart.min.js"></script>
+
+<script type="text/javascript">
+    "use strict";
+
+    // Carrega a lista de dispositivos ao carregar a página
+    async function carregarDispositivos() {
+        try {
+            const response = await fetch('/listar-dispositivos');
+            if (response.ok) {
+                const dispositivos = await response.json();
+                const selectDispositivo = document.getElementById("dispositivo");
+                dispositivos.forEach(dispositivo => {
+                    const option = document.createElement("option");
+                    option.value = dispositivo.id_dispositivo; // Corrigido para 'id_dispositivo'
+                    option.text = dispositivo.nome;
+                    selectDispositivo.appendChild(option);
+                });
+            } else {
+                Swal.fire("Erro", "Erro ao carregar dispositivos!", "error");
+            }
+        } catch (ex) {
+            Swal.fire("Erro", "Erro ao carregar dispositivos: " + ex.message, "error");
+        }
+    }
+
+    // Chama a função de carregamento de dispositivos ao iniciar a página
+    carregarDispositivos();
+
+    // Validação do formulário
+    $("#form").validate({
+        rules: {
+            dispositivo: { required: true },
+            data: { required: true }
+        },
+        submitHandler: function (form) {
+            // A função submitHandler agora faz a chamada de atualizarDados
+            atualizarDados();
+        }
+    });
+
+    // Função para atualizar os dados e gerar o gráfico
+    async function atualizarDados() {
+        waitSwal();
+
+        // Pegue o valor dos campos do formulário
+        const dataSelecionada = document.getElementById("data").value;
+        const dispositivoSelecionado = document.getElementById("dispositivo").value;
+
+        if (!dataSelecionada || !dispositivoSelecionado) {
+            Swal.fire("Erro", "Por favor, selecione um dispositivo e uma data!", "error");
+            return;
+        }
+
+        // Extrair o mês da data selecionada (formato MM)
+        const mesSelecionado = dataSelecionada.split("-")[1]; // Extrai o mês no formato MM
+
+        try {
+            // Construir a URL com os parâmetros corretamente ordenados
+            const url = `/listar-consolidado-por-dispositivo-dia-mes?mes=${mesSelecionado}&id_dispositivo=${dispositivoSelecionado}`;
+            
+            let response = await fetch(url);
+
+            if (response.ok) {
+                Swal.close();
+
+                let div = document.getElementById("div-grafico");
+                div.innerHTML = '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
+
+                let labels = [], data = [];
+
+                let leituras = await response.json();
+                if (!leituras || !leituras.length) {
+                    Swal.fire("Erro", "Sem dados disponíveis para a data e o dispositivo selecionados!", "error");
+                    return;
+                }
+
+                // Montando os dados para o gráfico
+                for (let i = 0; i < leituras.length; i++) {
+                    labels.push(leituras[i].dia);  // Dia da leitura (formato DD/MM/AAAA)
+                    data.push(leituras[i].consumo);  // Consumo
+                }
+
+                // Gerando o gráfico
+                new Chart(document.getElementById("grafico-barras"), {
+                    type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Consumo (kWh)",
+                            backgroundColor: "#4e73df",
+                            hoverBackgroundColor: "#2e59d9",
+                            borderColor: "#4e73df",
+                            data: data,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 25,
+                                top: 25,
+                                bottom: 0
+                            }
+                        },
+                        scales: {
+                            x: {
+                                gridLines: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 10
+                                },
+                                maxBarThickness: 25,
+                            },
+                            y: {
+                                ticks: {
+                                    beginAtZero: true,
+                                    padding: 10
+                                },
+                                gridLines: {
+                                    color: "rgb(234, 236, 244)",
+                                    zeroLineColor: "rgb(234, 236, 244)",
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            },
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            titleMarginBottom: 10,
+                            titleFontColor: '#6e707e',
+                            titleFontSize: 14,
+                            backgroundColor: "rgb(255,255,255)",
+                            bodyFontColor: "#858796",
+                            borderColor: '#dddfeb',
+                            borderWidth: 1,
+                            xPadding: 15,
+                            yPadding: 15,
+                            displayColors: false,
+                            caretPadding: 10
+                        },
+                    }
+                });
+
+            } else {
+                await exibirErro(response);
+            }
+
+        } catch (ex) {
+            Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
+        }
+    }
+
+    // Chama a função ao carregar a página para exibir os dados, caso haja parâmetros 'data' e 'dispositivo' na URL
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const data = urlParams.get('data');
+        const dispositivo = urlParams.get('id_dispositivo');
+        
+        if (data && dispositivo) {
+            document.getElementById('data').value = data;
+            document.getElementById('dispositivo').value = dispositivo;
+            atualizarDados();
+        }
+    }
+</script>
+
+{% endblock %}

@@ -55,21 +55,25 @@ def listarLeituras():
         """)).fetchall()
         lista_leituras = [{'id_leitura': leitura.id_leitura, 'nome_dispositivo': leitura.nome, 'consumo': leitura.consumo, 'data': leitura.data} for leitura in leituras]
         return lista_leituras  
-'''
--- Consumo por dispositivo por dia por mês
-select avg(consumo) consumo, date_format(data, '%d/%m/%Y') dia
-from leitura
-where extract(month from data) = 11 and id_dispositivo = 2
-group by date_format(data, '%d/%m/%Y')
-order by dia;
 
--- Consumo consolidado por hora por dia
-select avg(consumo) consumo, date_format(data, '%H') hora
-from leitura
-where date(data) = '2024-11-25'
-group by date_format(data, '%H')
-order by hora;
-'''
+def listarConsolidadoPorDispositivoPorDiaPorMes(mes, id_dispositivo):
+    with Session(engine) as sessao:
+        parametros = {
+            'mes': mes,
+            'id_dispositivo': id_dispositivo
+        }
+        leituras = sessao.execute(text("""
+            SELECT AVG(consumo) AS consumo, DATE_FORMAT(data, '%d/%m/%Y') AS dia
+            FROM leitura
+            WHERE EXTRACT(MONTH FROM data) = :mes
+              AND id_dispositivo = :id_dispositivo
+            GROUP BY DATE_FORMAT(data, '%d/%m/%Y')
+            ORDER BY dia;
+        """), parametros).fetchall()
+        
+        lista_leituras = [{'consumo': leitura.consumo, 'dia': leitura.dia} for leitura in leituras]
+        return lista_leituras
+    
 def listarConsolidadoPorDiaPorMes(mes):
     with Session(engine) as sessao:
         parametros = {
@@ -84,6 +88,22 @@ def listarConsolidadoPorDiaPorMes(mes):
         """), parametros).fetchall()
         lista_leituras = [{'consumo': leitura.consumo, 'dia': leitura.dia} for leitura in leituras]
         return lista_leituras  
+    
+def listarConsolidadoPorHoraPorDia(data):
+    with Session(engine) as sessao:
+        parametros = {
+            'data': data
+        }
+        leituras = sessao.execute(text("""
+            SELECT AVG(consumo) AS consumo, DATE_FORMAT(data, '%H') AS hora
+            FROM leitura
+            WHERE DATE(data) = :data
+            GROUP BY DATE_FORMAT(data, '%H')
+            ORDER BY hora;
+        """), parametros).fetchall()
+        
+        lista_leituras = [{'consumo': leitura.consumo, 'hora': leitura.hora} for leitura in leituras]
+        return lista_leituras
 
 def obterDispositivo(id_dispositivo):
     with Session(engine) as sessao:

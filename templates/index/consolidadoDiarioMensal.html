@@ -1,0 +1,142 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card shadow my-4">
+                <div class="card-body">
+                    <form id="form">
+                        <div class="form-group">
+                            <label for="mes">Mês</label>
+                            <input id="mes" name="mes" class="form-control" type="number" min="1" max="12" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Listar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow my-4">
+        <div class="card-body" id="div-grafico"></div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    "use strict";
+
+    // Validação do formulário para garantir que o campo "mes" esteja preenchido
+    $("#form").validate({
+        rules: {
+            mes: {
+                required: true,
+                min: 1,
+                max: 12
+            }
+        },
+        messages: {
+            mes: {
+                required: "Por favor, insira o mês.",
+                min: "O mês deve estar entre 1 e 12.",
+                max: "O mês deve estar entre 1 e 12."
+            }
+        },
+        submitHandler: function () {
+            atualizarDados();
+        }
+    });
+
+    async function atualizarDados() {
+        try {
+            let mes = document.getElementById("mes").value;
+
+            if (!mes) {
+                Swal.fire("Erro", "Por favor, insira o mês.", "error");
+                return;
+            }
+
+            let response = await fetch(`/listar-consolidado-dia-mes?mes=${mes}`);
+            if (response.ok) {
+                let div = document.getElementById("div-grafico");
+                div.innerHTML = '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
+
+                let labels = [], data = [];
+                let leituras = await response.json();
+
+                if (!leituras.length) {
+                    Swal.fire("Erro", "Sem dados disponíveis para o mês selecionado!", "error");
+                    return;
+                }
+
+                // Preenchendo os dados do gráfico
+                for (let leitura of leituras) {
+                    labels.push(leitura.data);  // Data
+                    data.push(leitura.consumo);  // Consumo
+                }
+
+                new Chart(document.getElementById("grafico-barras"), {
+                    type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Consumo (kWh)",
+                            backgroundColor: "#4e73df",
+                            borderColor: "#4e73df",
+                            data: data,
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 10
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    padding: 10
+                                },
+                                grid: {
+                                    color: "rgb(234, 236, 244)",
+                                    zeroLineColor: "rgb(234, 236, 244)",
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            },
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyColor: "#858796",
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                padding: 10,
+                                displayColors: false
+                            }
+                        }
+                    }
+                });
+            } else {
+                const errorData = await response.json();
+                Swal.fire("Erro", errorData.error || "Erro ao listar os dados.", "error");
+            }
+        } catch (ex) {
+            Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
+        }
+    }
+</script>
+
+{% endblock %}
