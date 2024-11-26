@@ -23,16 +23,26 @@
         <div class="card-body" id="div-grafico">
         </div>
     </div>
-
 </div>
 
 <script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
 <script src="/static/js/jquery-validate/additional-methods.min.js"></script>
 <script src="/static/js/jquery-validate/localization/messages_pt_BR.min.js"></script>
 <script type="text/javascript" src="/static/js/chart.js/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
     "use strict";
+
+    function waitSwal() {
+        Swal.fire({
+            title: 'Carregando...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
 
     $("#form").validate({
         rules: {
@@ -124,22 +134,18 @@
                                 }
                             },
                         },
-                        legend: {
-                            display: false
-                        },
-                        tooltips: {
-                            titleMarginBottom: 10,
-                            titleFontColor: '#6e707e',
-                            titleFontSize: 14,
-                            backgroundColor: "rgb(255,255,255)",
-                            bodyFontColor: "#858796",
-                            borderColor: '#dddfeb',
-                            borderWidth: 1,
-                            xPadding: 15,
-                            yPadding: 15,
-                            displayColors: false,
-                            caretPadding: 10
-                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.raw + " kWh";
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
 

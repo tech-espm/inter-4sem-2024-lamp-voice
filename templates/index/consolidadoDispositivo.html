@@ -34,11 +34,24 @@
 <script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
 <script src="/static/js/jquery-validate/additional-methods.min.js"></script>
 <script src="/static/js/jquery-validate/localization/messages_pt_BR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript" src="/static/js/chart.js/chart.min.js"></script>
 
 <script type="text/javascript">
     "use strict";
 
+    // Define a função waitSwal para exibir o spinner de carregamento
+    function waitSwal() {
+        Swal.fire({
+            title: 'Carregando...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
+
+    // Função para carregar os dispositivos
     async function carregarDispositivos() {
         try {
             const response = await fetch('/listar-dispositivos');
@@ -47,7 +60,7 @@
                 const selectDispositivo = document.getElementById("dispositivo");
                 dispositivos.forEach(dispositivo => {
                     const option = document.createElement("option");
-                    option.value = dispositivo.id_dispositivo; 
+                    option.value = dispositivo.id_dispositivo;
                     option.text = dispositivo.nome;
                     selectDispositivo.appendChild(option);
                 });
@@ -59,8 +72,10 @@
         }
     }
 
+    // Carregar dispositivos na inicialização
     carregarDispositivos();
 
+    // Validação do formulário
     $("#form").validate({
         rules: {
             dispositivo: { required: true },
@@ -71,6 +86,7 @@
         }
     });
 
+    // Função para atualizar os dados e gerar o gráfico
     async function atualizarDados() {
         waitSwal();
 
@@ -104,8 +120,8 @@
                 }
 
                 for (let i = 0; i < leituras.length; i++) {
-                    labels.push(leituras[i].dia);  
-                    data.push(leituras[i].consumo);  
+                    labels.push(leituras[i].dia);
+                    data.push(leituras[i].consumo);
                 }
 
                 new Chart(document.getElementById("grafico-barras"), {
@@ -155,27 +171,23 @@
                                 }
                             },
                         },
-                        legend: {
-                            display: false
-                        },
-                        tooltips: {
-                            titleMarginBottom: 10,
-                            titleFontColor: '#6e707e',
-                            titleFontSize: 14,
-                            backgroundColor: "rgb(255,255,255)",
-                            bodyFontColor: "#858796",
-                            borderColor: '#dddfeb',
-                            borderWidth: 1,
-                            xPadding: 15,
-                            yPadding: 15,
-                            displayColors: false,
-                            caretPadding: 10
-                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.raw + " kWh";
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
 
             } else {
-                await exibirErro(response);
+                Swal.fire("Erro", "Erro ao listar os dados!", "error");
             }
 
         } catch (ex) {
@@ -183,6 +195,7 @@
         }
     }
 
+    // Inicialização para carregar dados automaticamente, se necessário
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const data = urlParams.get('data');
