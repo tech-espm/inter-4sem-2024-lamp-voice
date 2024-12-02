@@ -1,28 +1,25 @@
-{% extends 'layout.html' %}
-
-{% block body %}
+{% extends 'layout.html' %} {% block body %}
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="card shadow my-4">
-                <div class="card-body">
-                    <form id="form">
-                        <div class="form-group">
-                            <label for="data">Data</label>
-                            <input id="data" name="data" class="form-control" type="date" />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Listar</button>
-                    </form>
-                </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="card shadow my-4">
+        <div class="card-body">
+          <form id="form">
+            <div class="form-group">
+              <label for="data">Data</label>
+              <input id="data" name="data" class="form-control" type="date" />
             </div>
+            <button type="submit" class="btn btn-primary">Listar</button>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="card shadow my-4">
-        <div class="card-body" id="div-grafico">
-        </div>
-    </div>
+  <div class="card shadow my-4">
+    <div class="card-body" id="div-grafico"></div>
+  </div>
 </div>
 
 <script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
@@ -32,141 +29,151 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
-    "use strict";
+  "use strict";
 
-    function waitSwal() {
-        Swal.fire({
-            title: 'Carregando...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-    }
-
-    $("#form").validate({
-        rules: {
-            data: {
-                required: true
-            }
-        },
-        submitHandler: function () {
-            atualizarDados();
-        }
+  function waitSwal() {
+    Swal.fire({
+      title: "Carregando...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
+  }
 
-    async function atualizarDados() {
-        waitSwal();
+  $("#form").validate({
+    rules: {
+      data: {
+        required: true,
+      },
+    },
+    submitHandler: function () {
+      atualizarDados();
+    },
+  });
 
-        const dataSelecionada = document.getElementById("data").value;
+  async function atualizarDados() {
+    waitSwal();
 
-        if (!dataSelecionada) {
-            Swal.fire("Erro", "Por favor, selecione uma data!", "error");
-            return;
-        }
+    const dataSelecionada = document.getElementById("data").value;
 
-        try {
-            let response = await fetch(`/listar-consolidado-por-hora-dia?data=${dataSelecionada}`);
-
-            if (response.ok) {
-                Swal.close();
-
-                let div = document.getElementById("div-grafico");
-                div.innerHTML = '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
-
-                let labels = [], data = [];
-
-                let leituras = await response.json();
-                if (!leituras || !leituras.length) {
-                    Swal.fire("Erro", "Sem dados disponíveis para a data selecionada!", "error");
-                    return;
-                }
-
-                for (let i = 0; i < leituras.length; i++) {
-                    labels.push(leituras[i].hora);  
-                    data.push(leituras[i].consumo);  
-                }
-
-                let grafico = new Chart(document.getElementById("grafico-barras"), {
-                    type: "bar",
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Consumo (kWh)",
-                            backgroundColor: "#4e73df",
-                            hoverBackgroundColor: "#2e59d9",
-                            borderColor: "#4e73df",
-                            data: data,
-                        }],
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        layout: {
-                            padding: {
-                                left: 10,
-                                right: 25,
-                                top: 25,
-                                bottom: 0
-                            }
-                        },
-                        scales: {
-                            x: {
-                                gridLines: {
-                                    display: false,
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    maxTicksLimit: 10
-                                },
-                                maxBarThickness: 25,
-                            },
-                            y: {
-                                ticks: {
-                                    beginAtZero: true,
-                                    padding: 10
-                                },
-                                gridLines: {
-                                    color: "rgb(234, 236, 244)",
-                                    zeroLineColor: "rgb(234, 236, 244)",
-                                    drawBorder: false,
-                                    borderDash: [2],
-                                    zeroLineBorderDash: [2]
-                                }
-                            },
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return tooltipItem.raw + " kWh";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-            } else {
-                await exibirErro(response);
-            }
-
-        } catch (ex) {
-            Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
-        }
+    if (!dataSelecionada) {
+      Swal.fire("Erro", "Por favor, selecione uma data!", "error");
+      return;
     }
 
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const data = urlParams.get('data');
-        
-        if (data) {
-            document.getElementById('data').value = data;
-            atualizarDados();
+    try {
+      let response = await fetch(
+        `/listar-consolidado-por-hora-dia?data=${dataSelecionada}`
+      );
+
+      if (response.ok) {
+        Swal.close();
+
+        let div = document.getElementById("div-grafico");
+        div.innerHTML =
+          '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
+
+        let labels = [],
+          data = [];
+
+        let leituras = await response.json();
+        if (!leituras || !leituras.length) {
+          Swal.fire(
+            "Erro",
+            "Sem dados disponíveis para a data selecionada!",
+            "error"
+          );
+          return;
         }
+
+        for (let i = 0; i < leituras.length; i++) {
+          labels.push(leituras[i].hora);
+          data.push(leituras[i].consumo);
+        }
+
+        let grafico = new Chart(document.getElementById("grafico-barras"), {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Consumo (kWh)",
+                backgroundColor: "#4e73df",
+                hoverBackgroundColor: "#2e59d9",
+                borderColor: "#4e73df",
+                data: data,
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0,
+              },
+            },
+            scales: {
+              x: {
+                gridLines: {
+                  display: false,
+                  drawBorder: false,
+                },
+                ticks: {
+                  maxRotation: 45, 
+                  minRotation: 45, 
+                  autoSkip: false, 
+                },
+                maxBarThickness: 25,
+              },
+              y: {
+                ticks: {
+                  beginAtZero: true,
+                  padding: 10,
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2],
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return tooltipItem.raw + " kWh";
+                  },
+                },
+              },
+            },
+          },
+        });
+      } else {
+        await exibirErro(response);
+      }
+    } catch (ex) {
+      Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
     }
+  }
+
+  window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get("data");
+
+    if (data) {
+      document.getElementById("data").value = data;
+      atualizarDados();
+    }
+  };
 </script>
 
 {% endblock %}

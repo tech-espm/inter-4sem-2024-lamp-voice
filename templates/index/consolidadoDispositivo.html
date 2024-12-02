@@ -1,34 +1,33 @@
-{% extends 'layout.html' %}
-
-{% block body %}
+{% extends 'layout.html' %} {% block body %}
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="card shadow my-4">
-                <div class="card-body">
-                    <form id="form">
-                        <div class="form-group">
-                            <label for="dispositivo">Dispositivo</label>
-                            <select id="dispositivo" name="dispositivo" class="form-control">
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="data">Data</label>
-                            <input id="data" name="data" class="form-control" type="date" />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Listar</button>
-                    </form>
-                </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="card shadow my-4">
+        <div class="card-body">
+          <form id="form">
+            <div class="form-group">
+              <label for="dispositivo">Dispositivo</label>
+              <select
+                id="dispositivo"
+                name="dispositivo"
+                class="form-control"
+              ></select>
             </div>
+            <div class="form-group">
+              <label for="data">Data</label>
+              <input id="data" name="data" class="form-control" type="date" />
+            </div>
+            <button type="submit" class="btn btn-primary">Listar</button>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="card shadow my-4">
-        <div class="card-body" id="div-grafico">
-        </div>
-    </div>
-
+  <div class="card shadow my-4">
+    <div class="card-body" id="div-grafico"></div>
+  </div>
 </div>
 
 <script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
@@ -38,175 +37,191 @@
 <script type="text/javascript" src="/static/js/chart.js/chart.min.js"></script>
 
 <script type="text/javascript">
-    "use strict";
+  "use strict";
 
-    // Define a função waitSwal para exibir o spinner de carregamento
-    function waitSwal() {
-        Swal.fire({
-            title: 'Carregando...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-    }
-
-    // Função para carregar os dispositivos
-    async function carregarDispositivos() {
-        try {
-            const response = await fetch('/listar-dispositivos');
-            if (response.ok) {
-                const dispositivos = await response.json();
-                const selectDispositivo = document.getElementById("dispositivo");
-                dispositivos.forEach(dispositivo => {
-                    const option = document.createElement("option");
-                    option.value = dispositivo.id_dispositivo;
-                    option.text = dispositivo.nome;
-                    selectDispositivo.appendChild(option);
-                });
-            } else {
-                Swal.fire("Erro", "Erro ao carregar dispositivos!", "error");
-            }
-        } catch (ex) {
-            Swal.fire("Erro", "Erro ao carregar dispositivos: " + ex.message, "error");
-        }
-    }
-
-    // Carregar dispositivos na inicialização
-    carregarDispositivos();
-
-    // Validação do formulário
-    $("#form").validate({
-        rules: {
-            dispositivo: { required: true },
-            data: { required: true }
-        },
-        submitHandler: function (form) {
-            atualizarDados();
-        }
+  // Define a função waitSwal para exibir o spinner de carregamento
+  function waitSwal() {
+    Swal.fire({
+      title: "Carregando...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
+  }
 
-    // Função para atualizar os dados e gerar o gráfico
-    async function atualizarDados() {
-        waitSwal();
+  // Função para carregar os dispositivos
+  async function carregarDispositivos() {
+    try {
+      const response = await fetch("/listar-dispositivos");
+      if (response.ok) {
+        const dispositivos = await response.json();
+        const selectDispositivo = document.getElementById("dispositivo");
+        dispositivos.forEach((dispositivo) => {
+          const option = document.createElement("option");
+          option.value = dispositivo.id_dispositivo;
+          option.text = dispositivo.nome;
+          selectDispositivo.appendChild(option);
+        });
+      } else {
+        Swal.fire("Erro", "Erro ao carregar dispositivos!", "error");
+      }
+    } catch (ex) {
+      Swal.fire(
+        "Erro",
+        "Erro ao carregar dispositivos: " + ex.message,
+        "error"
+      );
+    }
+  }
 
-        const dataSelecionada = document.getElementById("data").value;
-        const dispositivoSelecionado = document.getElementById("dispositivo").value;
+  // Carregar dispositivos na inicialização
+  carregarDispositivos();
 
-        if (!dataSelecionada || !dispositivoSelecionado) {
-            Swal.fire("Erro", "Por favor, selecione um dispositivo e uma data!", "error");
-            return;
-        }
+  // Validação do formulário
+  $("#form").validate({
+    rules: {
+      dispositivo: { required: true },
+      data: { required: true },
+    },
+    submitHandler: function (form) {
+      atualizarDados();
+    },
+  });
 
-        const mesSelecionado = dataSelecionada.split("-")[1]; // Extrai o mês no formato MM
+  // Função para atualizar os dados e gerar o gráfico
+  async function atualizarDados() {
+    waitSwal();
 
-        try {
-            const url = `/listar-consolidado-por-dispositivo-dia-mes?mes=${mesSelecionado}&id_dispositivo=${dispositivoSelecionado}`;
-            
-            let response = await fetch(url);
+    const dataSelecionada = document.getElementById("data").value;
+    const dispositivoSelecionado = document.getElementById("dispositivo").value;
 
-            if (response.ok) {
-                Swal.close();
-
-                let div = document.getElementById("div-grafico");
-                div.innerHTML = '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
-
-                let labels = [], data = [];
-
-                let leituras = await response.json();
-                if (!leituras || !leituras.length) {
-                    Swal.fire("Erro", "Sem dados disponíveis para a data e o dispositivo selecionados!", "error");
-                    return;
-                }
-
-                for (let i = 0; i < leituras.length; i++) {
-                    labels.push(leituras[i].dia);
-                    data.push(leituras[i].consumo);
-                }
-
-                new Chart(document.getElementById("grafico-barras"), {
-                    type: "bar",
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Consumo (kWh)",
-                            backgroundColor: "#4e73df",
-                            hoverBackgroundColor: "#2e59d9",
-                            borderColor: "#4e73df",
-                            data: data,
-                        }],
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        layout: {
-                            padding: {
-                                left: 10,
-                                right: 25,
-                                top: 25,
-                                bottom: 0
-                            }
-                        },
-                        scales: {
-                            x: {
-                                gridLines: {
-                                    display: false,
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    maxTicksLimit: 10
-                                },
-                                maxBarThickness: 25,
-                            },
-                            y: {
-                                ticks: {
-                                    beginAtZero: true,
-                                    padding: 10
-                                },
-                                gridLines: {
-                                    color: "rgb(234, 236, 244)",
-                                    zeroLineColor: "rgb(234, 236, 244)",
-                                    drawBorder: false,
-                                    borderDash: [2],
-                                    zeroLineBorderDash: [2]
-                                }
-                            },
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return tooltipItem.raw + " kWh";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-            } else {
-                Swal.fire("Erro", "Erro ao listar os dados!", "error");
-            }
-
-        } catch (ex) {
-            Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
-        }
+    if (!dataSelecionada || !dispositivoSelecionado) {
+      Swal.fire(
+        "Erro",
+        "Por favor, selecione um dispositivo e uma data!",
+        "error"
+      );
+      return;
     }
 
-    // Inicialização para carregar dados automaticamente, se necessário
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const data = urlParams.get('data');
-        const dispositivo = urlParams.get('id_dispositivo');
-        
-        if (data && dispositivo) {
-            document.getElementById('data').value = data;
-            document.getElementById('dispositivo').value = dispositivo;
-            atualizarDados();
+    const mesSelecionado = dataSelecionada.split("-")[1]; // Extrai o mês no formato MM
+
+    try {
+      const url = `/listar-consolidado-por-dispositivo-dia-mes?mes=${mesSelecionado}&id_dispositivo=${dispositivoSelecionado}`;
+
+      let response = await fetch(url);
+
+      if (response.ok) {
+        Swal.close();
+
+        let div = document.getElementById("div-grafico");
+        div.innerHTML =
+          '<canvas id="grafico-barras" style="height: 50vh;"></canvas>';
+
+        let labels = [],
+          data = [];
+
+        let leituras = await response.json();
+        if (!leituras || !leituras.length) {
+          Swal.fire(
+            "Erro",
+            "Sem dados disponíveis para a data e o dispositivo selecionados!",
+            "error"
+          );
+          return;
         }
+
+        for (let i = 0; i < leituras.length; i++) {
+          labels.push(leituras[i].dia);
+          data.push(leituras[i].consumo);
+        }
+
+        new Chart(document.getElementById("grafico-barras"), {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Consumo (kWh)",
+                backgroundColor: "#4e73df",
+                hoverBackgroundColor: "#2e59d9",
+                borderColor: "#4e73df",
+                data: data,
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0,
+              },
+            },
+            scales: {
+              x: {
+                gridLines: {
+                  display: false,
+                  drawBorder: false,
+                },
+                ticks: {
+                  maxRotation: 45, 
+                  minRotation: 45, 
+                  autoSkip: false, 
+                },
+                maxBarThickness: 25,
+              },
+              y: {
+                ticks: {
+                  beginAtZero: true,
+                  padding: 10,
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2],
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return tooltipItem.raw + " kWh";
+                  },
+                },
+              },
+            },
+          },
+        });
+      } else {
+        Swal.fire("Erro", "Erro ao listar os dados!", "error");
+      }
+    } catch (ex) {
+      Swal.fire("Erro", "Erro ao listar os dados: " + ex.message, "error");
     }
+  }
+
+  // Inicialização para carregar dados automaticamente, se necessário
+  window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get("data");
+    const dispositivo = urlParams.get("id_dispositivo");
+
+    if (data && dispositivo) {
+      document.getElementById("data").value = data;
+      document.getElementById("dispositivo").value = dispositivo;
+      atualizarDados();
+    }
+  };
 </script>
 
 {% endblock %}

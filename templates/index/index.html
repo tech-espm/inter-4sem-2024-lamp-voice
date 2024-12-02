@@ -1,258 +1,309 @@
-﻿{% extends 'layout.html' %}
-
-{% block body %}
+﻿{% extends 'layout.html' %} {% block body %}
 
 <div class="container-fluid">
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow my-4">
-                <div class="card-header text-center">
-                    <h5>Consumo por Dispositivo</h5>
-                </div>
-                <div class="card-body">
-                    <form id="form-dispositivo">
-                        <div class="form-group">
-                            <label for="dispositivo">Dispositivo</label>
-                            <select id="dispositivo" name="dispositivo" class="form-control"></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="data">Data</label>
-                            <input id="data" name="data" class="form-control" type="date" />
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Listar</button>
-                    </form>
-                    <div id="grafico-dispositivo-container" class="mt-3">
-                        <canvas id="grafico-dispositivo"></canvas>
-                    </div>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow my-4">
+        <div class="card-header text-center">
+          <h5>Consumo por Dispositivo</h5>
         </div>
-
-        <div class="col-md-6">
-            <div class="card shadow my-4">
-                <div class="card-header text-center">
-                    <h5>Consumo por Dia</h5>
-                </div>
-                <div class="card-body">
-                    <form id="form-dia">
-                        <div class="form-group">
-                            <label for="ano">Ano</label>
-                            <input id="ano" name="ano" class="form-control" type="number" />
-                        </div>
-                        <div class="form-group">
-                            <label for="mes">Mês</label>
-                            <select id="mes" name="mes" class="form-control">
-                                <option value="1">Janeiro</option>
-                                <option value="2">Fevereiro</option>
-                                <option value="3">Março</option>
-                                <option value="4">Abril</option>
-                                <option value="5">Maio</option>
-                                <option value="6">Junho</option>
-                                <option value="7">Julho</option>
-                                <option value="8">Agosto</option>
-                                <option value="9">Setembro</option>
-                                <option value="10">Outubro</option>
-                                <option value="11">Novembro</option>
-                                <option value="12">Dezembro</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Listar</button>
-                    </form>
-                    <div id="grafico-dia-container" class="mt-3">
-                        <canvas id="grafico-dia"></canvas>
-                    </div>
-                </div>
+        <div class="card-body">
+          <form id="form-dispositivo">
+            <div class="form-group">
+              <label for="dispositivo">Dispositivo</label>
+              <select
+                id="dispositivo"
+                name="dispositivo"
+                class="form-control"
+              ></select>
             </div>
+            <div class="form-group">
+              <label for="data">Data</label>
+              <input id="data" name="data" class="form-control" type="date" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Listar</button>
+          </form>
+          <div id="grafico-dispositivo-container" class="mt-3">
+            <canvas id="grafico-dispositivo"></canvas>
+          </div>
         </div>
+      </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow my-4">
-                <div class="card-header text-center">
-                    <h5>Consumo por Hora</h5>
-                </div>
-                <div class="card-body">
-                    <form id="form-hora">
-                        <div class="form-group">
-                            <label for="data-hora">Data</label>
-                            <input id="data-hora" name="data" class="form-control" type="date" />
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Listar</button>
-                    </form>
-                    <div id="grafico-hora-container" class="mt-3">
-                        <canvas id="grafico-hora"></canvas>
-                    </div>
-                </div>
-            </div>
+    <div class="col-md-6">
+      <div class="card shadow my-4">
+        <div class="card-header text-center">
+          <h5>Consumo por Dia</h5>
         </div>
+        <div class="card-body">
+          <form id="form-dia">
+            <div class="form-group">
+              <label for="ano">Ano</label>
+              <input id="ano" name="ano" class="form-control" type="number" />
+            </div>
+            <div class="form-group">
+              <label for="mes">Mês</label>
+              <select id="mes" name="mes" class="form-control">
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Listar</button>
+          </form>
+          <div id="grafico-dia-container" class="mt-3">
+            <canvas id="grafico-dia"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="col-md-6"></div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow my-4">
+        <div class="card-header text-center">
+          <h5>Consumo por Hora</h5>
+        </div>
+        <div class="card-body">
+          <form id="form-hora">
+            <div class="form-group">
+              <label for="data-hora">Data</label>
+              <input
+                id="data-hora"
+                name="data"
+                class="form-control"
+                type="date"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Listar</button>
+          </form>
+          <div id="grafico-hora-container" class="mt-3">
+            <canvas id="grafico-hora"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <div class="col-md-6"></div>
+  </div>
 </div>
 
 <script src="/static/js/chart.js/chart.min.js"></script>
 
 <script>
-    "use strict";
+  "use strict";
 
-    async function carregarDispositivos() {
-        try {
-            const response = await fetch('/listar-dispositivos');
-            if (response.ok) {
-                const dispositivos = await response.json();
-                const selectDispositivo = document.getElementById("dispositivo");
-                dispositivos.forEach(dispositivo => {
-                    const option = document.createElement("option");
-                    option.value = dispositivo.id_dispositivo;
-                    option.text = dispositivo.nome;
-                    selectDispositivo.appendChild(option);
-                });
-            } else {
-                alert("Erro ao carregar dispositivos.");
-            }
-        } catch (ex) {
-            alert("Erro ao carregar dispositivos: " + ex.message);
+  async function carregarDispositivos() {
+    try {
+      const response = await fetch("/listar-dispositivos");
+      if (response.ok) {
+        const dispositivos = await response.json();
+        const selectDispositivo = document.getElementById("dispositivo");
+        dispositivos.forEach((dispositivo) => {
+          const option = document.createElement("option");
+          option.value = dispositivo.id_dispositivo;
+          option.text = dispositivo.nome;
+          selectDispositivo.appendChild(option);
+        });
+      } else {
+        alert("Erro ao carregar dispositivos.");
+      }
+    } catch (ex) {
+      alert("Erro ao carregar dispositivos: " + ex.message);
+    }
+  }
+
+  async function atualizarGrafico(
+    formId,
+    url,
+    canvasId,
+    labelKey,
+    dataKey,
+    tipo = "bar"
+  ) {
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData).toString();
+
+    try {
+      const response = await fetch(`${url}?${params}`);
+      if (response.ok) {
+        const leituras = await response.json();
+        if (leituras.length === 0) {
+          alert("Sem dados disponíveis.");
+          return;
         }
+
+        const labels = leituras.map((l) => l[labelKey]);
+        const data = leituras.map((l) => l[dataKey]);
+
+        const ctx = document.getElementById(canvasId).getContext("2d");
+        new Chart(ctx, {
+          type: tipo,
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Consumo",
+                data: data,
+                backgroundColor:
+                  tipo === "pie"
+                    ? ["#4e73df", "#1cc88a", "#36b9cc"]
+                    : "#4e73df",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                ticks: {
+                  maxRotation: 45, // Máxima rotação dos rótulos
+                  minRotation: 45, // Mínima rotação dos rótulos
+                  autoSkip: false, // Exibe todos os rótulos mesmo que fiquem inclinados
+                },
+              },
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      } else {
+        alert("Erro ao listar dados.");
+      }
+    } catch (error) {
+      alert("Erro: " + error.message);
+    }
+  }
+
+  document.getElementById("form-dia").onsubmit = (e) => {
+    e.preventDefault();
+    atualizarGrafico(
+      "form-dia",
+      "/listar-consolidado-dia-mes",
+      "grafico-dia",
+      "dia",
+      "consumo",
+      "line"
+    );
+  };
+
+  document.getElementById("form-hora").onsubmit = (e) => {
+    e.preventDefault();
+    atualizarGrafico(
+      "form-hora",
+      "/listar-consolidado-por-hora-dia",
+      "grafico-hora",
+      "hora",
+      "consumo",
+      "bar"
+    );
+  };
+
+  async function atualizarGraficoDispositivo() {
+    const dataSelecionada = document.getElementById("data").value;
+    const dispositivoSelecionado = document.getElementById("dispositivo").value;
+
+    if (!dataSelecionada || !dispositivoSelecionado) {
+      alert("Por favor, selecione um dispositivo e uma data.");
+      return;
     }
 
-    async function atualizarGrafico(formId, url, canvasId, labelKey, dataKey, tipo = 'bar') {
-        const form = document.getElementById(formId);
-        const formData = new FormData(form);
-        const params = new URLSearchParams(formData).toString();
+    const mesSelecionado = dataSelecionada.split("-")[1];
 
-        try {
-            const response = await fetch(`${url}?${params}`);
-            if (response.ok) {
-                const leituras = await response.json();
-                if (leituras.length === 0) {
-                    alert("Sem dados disponíveis.");
-                    return;
-                }
+    try {
+      const url = `/listar-consolidado-por-dispositivo-dia-mes?mes=${mesSelecionado}&id_dispositivo=${dispositivoSelecionado}`;
+      const response = await fetch(url);
 
-                const labels = leituras.map(l => l[labelKey]);
-                const data = leituras.map(l => l[dataKey]);
-
-                const ctx = document.getElementById(canvasId).getContext('2d');
-                new Chart(ctx, {
-                    type: tipo,
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Consumo",
-                            data: data,
-                            backgroundColor: tipo === 'pie' ? ['#4e73df', '#1cc88a', '#36b9cc'] : '#4e73df',
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                });
-            } else {
-                alert("Erro ao listar dados.");
-            }
-        } catch (error) {
-            alert("Erro: " + error.message);
+      if (response.ok) {
+        const leituras = await response.json();
+        if (!leituras.length) {
+          alert("Sem dados disponíveis para o dispositivo selecionado.");
+          return;
         }
+
+        const labels = leituras.map((l) => l.dia);
+        const data = leituras.map((l) => l.consumo);
+
+        const ctx = document
+          .getElementById("grafico-dispositivo")
+          .getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Consumo (kWh)",
+                backgroundColor: "#4e73df",
+                hoverBackgroundColor: "#2e59d9",
+                borderColor: "#4e73df",
+                data: data,
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Dias do Mês",
+                },
+                ticks: {
+                  maxRotation: 45, // Máxima rotação dos rótulos
+                  minRotation: 45, // Mínima rotação dos rótulos
+                  autoSkip: false, // Exibe todos os rótulos mesmo que fiquem inclinados
+                },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Consumo (kWh)",
+                },
+                beginAtZero: true,
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `${context.raw} kWh`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      } else {
+        alert("Erro ao carregar dados.");
+      }
+    } catch (ex) {
+      alert("Erro ao carregar gráfico: " + ex.message);
     }
+  }
 
-    document.getElementById("form-dia").onsubmit = e => {
-        e.preventDefault();
-        atualizarGrafico("form-dia", "/listar-consolidado-dia-mes", "grafico-dia", "dia", "consumo", "line");
-    };
+  document.getElementById("form-dispositivo").onsubmit = function (e) {
+    e.preventDefault();
+    atualizarGraficoDispositivo();
+  };
 
-    document.getElementById("form-hora").onsubmit = e => {
-        e.preventDefault();
-        const data = document.getElementById("data-hora").value;
-        atualizarGrafico("form-hora", `/listar-consolidado-por-hora-dia?data=${data}`, "grafico-hora", "hora", "consumo", "pie");
-    };
-
-    async function atualizarGraficoDispositivo() {
-        const dataSelecionada = document.getElementById("data").value;
-        const dispositivoSelecionado = document.getElementById("dispositivo").value;
-
-        if (!dataSelecionada || !dispositivoSelecionado) {
-            alert("Por favor, selecione um dispositivo e uma data.");
-            return;
-        }
-
-        const mesSelecionado = dataSelecionada.split("-")[1]; 
-
-        try {
-            const url = `/listar-consolidado-por-dispositivo-dia-mes?mes=${mesSelecionado}&id_dispositivo=${dispositivoSelecionado}`;
-            const response = await fetch(url);
-
-            if (response.ok) {
-                const leituras = await response.json();
-                if (!leituras.length) {
-                    alert("Sem dados disponíveis para o dispositivo selecionado.");
-                    return;
-                }
-
-                const labels = leituras.map(l => l.dia);
-                const data = leituras.map(l => l.consumo);
-
-                const ctx = document.getElementById("grafico-dispositivo").getContext("2d");
-                new Chart(ctx, {
-                    type: "bar",
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Consumo (kWh)",
-                            backgroundColor: "#4e73df",
-                            hoverBackgroundColor: "#2e59d9",
-                            borderColor: "#4e73df",
-                            data: data,
-                        }],
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: "Dias do Mês"
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: "Consumo (kWh)"
-                                },
-                                beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.raw} kWh`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            } else {
-                alert("Erro ao carregar dados.");
-            }
-        } catch (ex) {
-            alert("Erro ao carregar gráfico: " + ex.message);
-        }
-    }
-
-    document.getElementById("form-dispositivo").onsubmit = function (e) {
-        e.preventDefault();
-        atualizarGraficoDispositivo();
-    };
-
-    carregarDispositivos();
+  carregarDispositivos();
 </script>
 
 {% endblock %}
