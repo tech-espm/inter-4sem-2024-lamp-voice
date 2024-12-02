@@ -3,123 +3,156 @@
 {% block body %}
 
 <div class="container">
+    <header class="header">
+        <h1 class="title">Monitor de Iluminação e Consumo de Energia</h1>
+        <p class="subtitle">Controle automático de iluminação e relatórios de consumo.</p>
+    </header>
     
-    <button id="recordToggleButton" class="record-btn">
-        <span id="recordIcon" class="material-icons">mic</span>
-    </button>
-    
-    <a id="downloadLink" class="download-link" style="display: none;">Download Recording</a>
+    <div class="content">
+        <div class="info-box">
+            <h2 class="info-title">Como Funciona?</h2>
+            <p>
+                Nosso sistema utiliza um sensor de luminosidade conectado a um Arduino para medir a intensidade de luz no ambiente. 
+                Quando o local está escuro, a lâmpada acende automaticamente, e quando está claro, ela apaga, economizando energia.
+            </p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <i class="material-icons feature-icon">wb_sunny</i>
+                <h3>Iluminação Inteligente</h3>
+                <p>Ajuste automático com base na luminosidade do ambiente.</p>
+            </div>
+            <div class="feature">
+                <i class="material-icons feature-icon">bar_chart</i>
+                <h3>Relatórios Detalhados</h3>
+                <p>Acompanhe o consumo de energia diário, mensal e anual.</p>
+            </div>
+            <div class="feature">
+                <i class="material-icons feature-icon">power</i>
+                <h3>Eficiência Energética</h3>
+                <p>Reduza desperdícios e economize energia automaticamente.</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/graficos" class="btn">Visualizar Gráficos</a>
+            <a href="/sobre" class="btn btn-secondary">Saiba Mais</a>
+        </div>
+    </div>
 </div>
 
 <style>
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        background-color: #f9f9f9;
+    }
+
     .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-family: Arial, sans-serif;
-        padding-top: 100px;
+        text-align: center;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .header {
+        margin-bottom: 40px;
     }
 
     .title {
-        font-size: 2.5rem;
-        color: #333;
-        margin-bottom: 20px;
+        font-size: 3rem;
+        color: #4CAF50;
     }
 
-    .record-btn {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        border: none;
-        background-color: #4CAF50;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        font-size: 2.5rem;
-        color: white;
-    }
-
-    .record-btn.recording {
-        background-color: #ff4d4d;
-        animation: pulse 1s infinite;
-    }
-
-    .download-link {
-        margin-top: 30px;
+    .subtitle {
         font-size: 1.2rem;
-        color: #007bff;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    .info-box {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .info-title {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .features {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .feature {
+        text-align: center;
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        width: 250px;
+        margin: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+        font-size: 50px;
+        color: #4CAF50;
+        margin-bottom: 10px;
+    }
+
+    .feature h3 {
+        font-size: 1.5rem;
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .feature p {
+        color: #555;
+        font-size: 1rem;
+    }
+
+    .navigation {
+        margin-top: 40px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: white;
+        background-color: #4CAF50;
         text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        margin: 10px;
     }
 
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+    .btn:hover {
+        background-color: #45a049;
     }
 
-    .material-icons{
-        font-size: 60px;
+    .btn-secondary {
+        background-color: #007bff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #0056b3;
     }
 </style>
 
-<script>
-    let mediaRecorder;
-    let audioChunks = [];
-    let isRecording = false;
 
-    document.getElementById('recordToggleButton').addEventListener('click', async () => {
-        if (!isRecording) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/ogg' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-
-                    const downloadLink = document.getElementById('downloadLink');
-                    downloadLink.href = audioUrl;
-                    downloadLink.download = 'recording.ogg';
-                    downloadLink.style.display = 'block';
-                    downloadLink.textContent = 'Download Recording';
-                    
-                    downloadLink.click();
-                };
-
-                mediaRecorder.start();
-                isRecording = true;
-                toggleRecordingStyle();
-            } catch (error) {
-                console.error('Erro ao acessar o microfone:', error);
-                alert('Não foi possível acessar o microfone. Verifique as permissões no navegador.');
-            }
-        } else {
-            mediaRecorder.stop();
-            isRecording = false;
-            toggleRecordingStyle();
-        }
-    });
-
-    function toggleRecordingStyle() {
-        const recordButton = document.getElementById('recordToggleButton');
-        const recordIcon = document.getElementById('recordIcon');
-        if (isRecording) {
-            recordButton.classList.add('recording');
-            recordIcon.textContent = 'stop';
-        } else {
-            recordButton.classList.remove('recording');
-            recordIcon.textContent = 'mic';
-        }
-    }
-</script>
+<script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2024/11/28/11/20241128114516-EFTDSKY8.js"></script>
+    
 
 {% endblock %}
