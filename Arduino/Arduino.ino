@@ -85,7 +85,7 @@ void loop() {
   // begin() não realiza nenhum tipo de comunicação via rede, apenas
   // prepara o objeto para ser utilizado depois. Existe uma forma mais
   // prática, mas consome mais memória:
-  httpClient.begin(wiFiClient, "10.10.137.36", 3000, "/criar-leitura", false);
+  httpClient.begin(wiFiClient, "10.10.133.20", 3000, "/criar-leitura", false);
   
   // Configura o tempo máximo de espera.
   httpClient.setTimeout(30000);
