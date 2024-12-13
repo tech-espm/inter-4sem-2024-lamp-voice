@@ -43,6 +43,12 @@ O sistema opera da seguinte forma:
     * **Servidor:** Python, Flask, SQLAlchemy, MySQL Connector.
     * **Frontend:** HTML, CSS, JavaScript, Chart.js, Bootstrap, jQuery, SweetAlert2.
 
+ ## Demonstração do Projeto
+
+Veja como o projeto funciona:
+
+Assista ao vídeo completo da demonstração: [Vídeo de Demonstração](https://youtu.be/7fhjjQ3WA9E)
+
 
 ## Instalação e Execução
 
