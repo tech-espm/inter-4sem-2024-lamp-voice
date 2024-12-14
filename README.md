@@ -6,7 +6,7 @@
 
 # Projeto de Monitoramento de Iluminação e Consumo de Energia
 
-### [2024-02]
+### 2024-02
 
 ## Integrantes
 - [Alex Macedo](https://github.com/Alexxmfs)
